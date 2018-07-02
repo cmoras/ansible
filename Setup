@@ -1,0 +1,119 @@
+As usual, if you have tried setting it up earlier, we start with removing all traces of it ,  cuz it is bound to cause issue.  
+This is something that is of the highest priority.
+
+ubuntu and dereivates:
+
+sudo dpkg -l | grep ansible
+sudo apt-get remove --purge ansible
+sudo apt-get clean
+
+cents and redhat:
+yum list | grep ansible 
+yum remove ansible
+
+
+
+Starting with installation [in this  case in centos as the control node]:
+
+control node:
+-------------
+sudo yum install epel-release
+sudo yum install git python python-devel python-pip openssl ansible
+sudo yum update
+
+here we can test out if ansible has indeed installed by running 
+ansible --verson
+
+This should give out the version of the ansible package that you have installed
+
+Next make changes to /etc/ansible/ansible.cfg
+
+nano /etc/ansible/ansible.cfg 
+
+Make the following changes under the default category:
+
+[defaults]
+
+# some basic default values...
+
+inventory      = /etc/ansible/hosts
+#library        = /usr/share/my_modules/
+#module_utils   = /usr/share/my_module_utils/
+#remote_tmp     = ~/.ansible/tmp
+#local_tmp	= ~/.ansible/tmp
+#plugin_filters_cfg = /etc/ansible/plugin_filters.yml
+#forks          = 5
+#poll_interval  = 15
+sudo_user      = root
+#ask_sudo_pass = True
+#ask_pass      = True
+#transport	= smart
+#remote_port    = 22
+#module_lang    = C
+#module_set_locale = False
+
+sudo adduser ansible
+sudo su -
+visudo
+Add the following entry under root section. this section is added simply so the password is not asked, when running ansible.
+
+## Allow root to run any commands anywhere
+root    ALL=(ALL)       ALL
+ansible ALL=(ALL)       NOPASSWD:ALL
+
+Once this is done, test by loggin into ansible account with the password that was given while creation.
+And try to update using a sudo command. It should not ask for the password.
+
+
+Agent nodes:
+-------------
+same as earlier --
+sudo adduser ansible
+sudo passwd ansible if necessary 
+sudo su -
+visudo 
+
+and make the changes
+
+
+Once the hosts have been setup.  we go back to the control node and edit the file 
+nano /etc/ansible/hosts
+
+move the file mv /etc/ansible/hosts /etc/ansible/hosts.originaldo
+
+touch /etc/ansible/hosts
+
+
+In our case we have created 3 vm's where centos is control, ubuntu and debian are agents. 
+So my file looks like this:
+
+[local]
+localhost
+
+[ubuntu]
+apacemc5.mylabserver.com
+
+[debian]
+apacemc6.mylabserver.com
+
+
+-----------------------------------------------
+Moving over to the password less auth, we need to pass keys between control and agent 
+
+Log into the agents and run the following:
+
+su ansible
+ssh-keygen
+ssh-copy-id ansible@$whatever_your_control_node_is,in_my_case_it_is_centos
+
+that should do the trick.  try loggin into the server. shouldn't ask for passkey
+
+also log into the control node and type the following, if you want to test out ansible with localhost
+
+su ansible
+ssh-keygen
+ssh-copy-id ansible@localhost
+
+we are good to go ahead!!!!
+
+With this done, time for some ping-pong.
