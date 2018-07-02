@@ -1,0 +1,89 @@
+To run commands to all of the nodes mentioned in /etc/ansible/hosts
+
+
+-m means to run a module.
+
+ansible all  -m ping 
+
+a pong should return.
+
+
+lets say we want to run a arbitrary command so, we can use -a 
+
+ansible all -a "ls -al /home/ansible"
+
+
+In order to escalate privalge such as section that we do not have permission to run against then we could use -s 
+this uses the sudo previlages ont he agent node to get the info.  using simpley sudo on the ansible command instaed of using -s 
+will not work, cuz the key that is exchanged is not for root instead for ansible user 
+
+anible all -s -a "tail -10 /var/log/message"
+
+
+get in terms of the host group 
+
+===============================
+[local]
+localhost
+
+[ubuntu]
+apacemc5.mylabserver.com
+
+[debian]
+apacemc6.mylabserver.com
+=================================
+
+ansible ubuntu -a "ls -lah /home/ansible"
+
+
+trying to use modules:
+
+ansible all -s -m copy -a "src=/tmp/test dest=/home/"
+
+apacemc5.mylabserver.com | SUCCESS => {
+    "changed": true, 
+    "checksum": "da39a3ee5e6b4b0d3255bfef95601890afd80709", 
+    "dest": "/tmp/test", 
+    "gid": 1002, 
+    "group": "ansible", 
+    "md5sum": "d41d8cd98f00b204e9800998ecf8427e", 
+    "mode": "0664", 
+    "owner": "ansible", 
+    "size": 0, 
+    "src": "/home/ansible/.ansible/tmp/ansible-tmp-1530556605.17-144077738069190/source", 
+    "state": "file", 
+    "uid": 1002
+}
+apacemc6.mylabserver.com | SUCCESS => {
+    "changed": true, 
+    "checksum": "da39a3ee5e6b4b0d3255bfef95601890afd80709", 
+    "dest": "/tmp/test", 
+    "gid": 1002, 
+    "group": "ansible", 
+    "md5sum": "d41d8cd98f00b204e9800998ecf8427e", 
+    "mode": "0644", 
+    "owner": "ansible", 
+    "size": 0, 
+    "src": "/home/ansible/.ansible/tmp/ansible-tmp-1530556605.16-27308624745696/source", 
+    "state": "file", 
+    "uid": 1002
+}
+localhost | SUCCESS => {
+    "changed": false, 
+    "checksum": "da39a3ee5e6b4b0d3255bfef95601890afd80709", 
+    "dest": "/tmp/test", 
+    "gid": 1003, 
+    "group": "ansible", 
+    "mode": "0664", 
+    "owner": "ansible", 
+    "path": "/tmp/test", 
+    "secontext": "unconfined_u:object_r:user_home_t:s0", 
+    "size": 0, 
+    "state": "file", 
+    "uid": 1002
+}
+
+
+ansible ubuntu -s  -m apt -a "name=apache2 state=present"
+
+should show is apache is installed/present.
