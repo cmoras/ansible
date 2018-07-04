@@ -117,3 +117,10 @@ ssh-copy-id ansible@localhost
 we are good to go ahead!!!!
 
 With this done, time for some ping-pong.
+
+
+
+
+Aside from this you can create custom config's in your home directory, create separete cnf,playbook or roles.
+Each of this must howevee be mentioned in cnf. For the cnf itself, we could add it in the command line option with a -i flag
+or export the path.

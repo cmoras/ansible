@@ -1,0 +1,30 @@
+So before we start with playbooks, we need something called facts.
+Now facts are details about the node and the agents that will be useful while writing a playbook.
+
+Lets say for instance we have to update the kernel for a bunch of machines. But the updates need to happen for only a particulr kernel
+version only but leave the others alone.  here is whe collecting facts about the machines that we will be deploying the new package comes
+into picture.
+
+
+How do we get the fact?
+
+simple. lets say we want to get details about distribution
+
+ansible ubuntu -m setup -a 'filter=ansible_distri*'
+
+^^ this should give us details about the distribution of the hosts present under the group called ubuntu.
+^^ setup is the module used to gather these facts along with filter to get specific details
+
+
+so to start of for a basic playbook what we need is what is host? what is the task? and what are the details to this task?
+
+for instace
+----------
+- hosts: ubuntu
+  tasks
+  - name: Install httpd 
+    yum: pkg=httpd state=installed update_cache=true
+
+
+then run using ansible_playbook -s test.yml
+
