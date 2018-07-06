@@ -1,0 +1,58 @@
+Notify + Handlers:
+------------------
+
+As the name suggests this bit is used for handling specific use cases as in the example -->
+
+we ahve 2 hosts:
+
+--host1 : ubuntu
+--host2 : debian
+
+used the following playbook
+
+--- # this should server as test case for the basic formatting.
+- hosts: ubuntu
+  user: ansible
+  sudo: yes 
+  connection: ssh
+  gather_facts: no
+  tasks:
+  - name: uninstalling elinks in both the agents
+    apt: name=elinks state=absent
+    notify : uninstalled elinks
+  - name: install aptitude to the ubuntu host group
+    apt: name=aptitude state=latest update_cache=true
+    notify: installed aptitude
+  handler:
+  - name: uninstalled elinks
+    action: shell echo "tis is a test to check the functionality of handler+notify for elinks bit" >> clen.txt
+  - name: installed aptitude
+    action: shell echo "tis is a test to check the functionality of handler+notify for aptitude bit" >> clen.txt
+
+
+Made sure that elinks is not installe din both just to check the fucntionality, so as to see if the echo statement in handler gets 
+written to the agent node.
+
+
+Output:
+
+PLAY [ubuntu] *********************************************************************************************************************************
+
+TASK [uninstalling elinks in both the agents] *************************************************************************************************
+ok: [host1]
+ok: [host2]
+
+TASK [install aptitude to the ubuntu host group] **********************************************************************************************
+ok: [host2]
+changed: [hsot1]
+
+RUNNING HANDLER [installed aptitude] **********************************************************************************************************
+changed: [host1]
+
+PLAY RECAP ************************************************************************************************************************************
+host1   : ok=3    changed=2    unreachable=0    failed=0   
+host2   : ok=2    changed=0    unreachable=0    failed=0   
+
+
+
+To my luck we have aptitude already installed in host2. so host2 had no changes performed  at all.
