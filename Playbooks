@@ -28,3 +28,50 @@ for instace
 
 then run using ansible_playbook -s test.yml
 
+So lets say we want to do more taks per play:
+
+inthis case 
+
+---
+- hosts: all
+  tasks:
+  - name: get ls -lah detals
+    shell: ls -lah 
+  - name: echo a file to agents
+    shell: echo "hello this is clen" >> clen.txt
+  - name: installing elinks in both the agents
+    apt: name=elinks state=latest update_cache=yes
+
+we get an output:
+
+PLAY [all] ************************************************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************************************
+ok: [apacemc5.mylabserver.com]
+ok: [localhost]
+ok: [apacemc6.mylabserver.com]
+
+TASK [get ls -lah detals] *********************************************************************************************************************
+changed: [apacemc5.mylabserver.com]
+changed: [apacemc6.mylabserver.com]
+changed: [localhost]
+
+TASK [echo a file to agents] ******************************************************************************************************************
+changed: [apacemc5.mylabserver.com]
+changed: [apacemc6.mylabserver.com]
+changed: [localhost]
+
+TASK [installing elinks in both the agents] ***************************************************************************************************
+fatal: [localhost]: FAILED! => {"changed": false, "cmd": "apt-get update", "msg": "[Errno 2] No such file or directory", "rc": 2}
+ok: [apacemc5.mylabserver.com]
+ok: [apacemc6.mylabserver.com]
+	to retry, use: --limit @/home/ansible/playbooks/fpb.retry
+
+PLAY RECAP ************************************************************************************************************************************
+apacemc5.mylabserver.com   : ok=4    changed=2    unreachable=0    failed=0   
+apacemc6.mylabserver.com   : ok=4    changed=2    unreachable=0    failed=0   
+localhost                  : ok=3    changed=2    unreachable=0    failed=1   
+
+
+
+So localhost fails cuz it is centos,  and apt is not something that is applicable to this distribution.
