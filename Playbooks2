@@ -1,0 +1,23 @@
+In this we can discuss about how to issue sudo, type of cnnection, types of variables, prompts
+
+
+lets take an example:
+---
+- hosts: ubuntu,debian                                                  ##here are defining more that one host group
+  user: ansible                                                         ##which user is beign used for the execution of the playbook
+  sudo: yes                                                             ##sudo is set as yes,  meaning we no more need to go for ansible-playbook -s test.yml, -s can be skipped.
+  connection: ssh                                                       ##connectiontype --> ssh
+  gather_facts: no
+  vars:                                                                 ##vars: are local variables, so no tick mark
+    playbook_version: 0.1b
+  vars_files:                                                           ##vars_files:  are externally defined variables, hence the tick mark. in this case copyright.yml is another file in the same dir.
+    - copyright.yml
+  vars_prompt:
+    - name: web_domain
+      prompt: web domain
+  tasks:
+  - name: Install httpd 
+    apt: name=apache2 state=absent update_cache=yes
+  - name: Copying a file from host to agent node.
+    copy: src=clen.txt dest=/home/ansible/new.txt owner=ansible mode=666
+
