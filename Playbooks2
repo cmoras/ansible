@@ -15,9 +15,14 @@ lets take an example:
   vars_prompt:
     - name: web_domain
       prompt: web domain
-  tasks:
+  tasks:                                                                ##Normal tasks
   - name: Install httpd 
     apt: name=apache2 state=absent update_cache=yes
   - name: Copying a file from host to agent node.
     copy: src=clen.txt dest=/home/ansible/new.txt owner=ansible mode=666
 
+
+
+In this example we have not used the variables.
+
+Next will be using.
