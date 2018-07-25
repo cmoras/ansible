@@ -56,3 +56,37 @@ host2   : ok=2    changed=0    unreachable=0    failed=0
 
 
 To my luck we have aptitude already installed in host2. so host2 had no changes performed  at all.
+
+
+
+Along with Handlers, we have a way tpo register the out put from a command and then output in json format in the amster node using command,  register and debug statements.
+
+---
+- hosts: ubuntu
+  user: ansible
+  sudo: yes
+  connection: ssh
+  gather_facts: no
+  vars:
+    playbook_version: 0.1b
+  vars_files:
+    - copyright.yml
+  tasks:
+  - name: Install lynx package  
+    apt: name=lynx state=latest update_cache=yes
+  - name: Copying a file from host to agent node.
+    copy: src=clen.txt dest=/home/ansible/new.txt owner=ansible mode=666
+  - name: Installing apache module 
+    apt: name=apache2 state=latest update_cache=yes
+    notify: Restart apache2 service
+  - name: Verify the package is installed.
+    command: systemctl status apache2
+    register: result
+  - debug: var=result
+  handlers:
+  - name: Restart apache2 service
+    service: name=apache2 state=restarted
+
+
+Here we use command statement where we run the command, then use register to store the command details and then assign the result to push the data to the std output via debug statement.
+
