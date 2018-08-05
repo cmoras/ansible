@@ -1,0 +1,25 @@
+[ansible@apacemc1 ~]$ cat test.yml 
+---
+- hosts: all
+  user: ansible
+  sudo: yes
+  connection: ssh
+  gather_facts: no
+  vars:
+    playbook_version: 0.1b
+    nevar: "{{ lookup('file', '/home/ansible/new.txt') }}"
+  vars_files:
+    - copyright.yml
+  tasks:
+    - debug: msg="Lookup the name for clen {{ lookup('csvfile', 'clen file=lookup.csv delimiter=, default=NOMATCH') }}"
+    - debug: msg="great new world {{ nevar }}"
+    - name: hello this is a test for variable substitution {{ playbook_version }}
+      command: df -lh 
+      register: var1
+    - debug:  var=var1
+
+
+Lookups are way to retrieve value for an external datastore.
+
+For instance in case of lookup.csv, we are finding and entry related to 'clen' and that would be the output 
+in case of /home/ansible/new.txt, we are just outputing the entire file  as variable.
